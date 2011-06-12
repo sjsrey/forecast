@@ -30,7 +30,7 @@ OUTPUT:
 
 CHANGELOG:
 
-    Based on birdseye.py by Gina Tripani
+    Based on birdseye.py by Gina Trapani
 """
 
 
