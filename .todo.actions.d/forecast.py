@@ -154,50 +154,6 @@ def forecastAvailable(allItems):
 def usage():
     print "USAGE:  %s [todo.txt] [done.txt]"% (sys.argv[0], )
 
-def printTaskGroups(title, taskDict, priorityList, percentages):
-    print ""    
-    print "%s"% (title,)
-    separator("-")
-    if not taskDict:
-        print "No items to list."
-    else:
-        # sort the dictionary by value
-        # http://python.fyxm.net/peps/pep-0265.html
-        items = [(v, k) for k, v in taskDict.items()]
-        items.sort()
-        items.reverse()             # so largest is first
-        items = [(k, v) for v, k in items]
-
-        for item in items:    
-            if item[0] in priorityList:
-                if item[0] not in percentages:
-                    printTaskGroup(item, -1, "*")
-                else:
-                    printTaskGroup(item, percentages[item[0]], "*")
-
-        for item in items:
-            if item[0] not in priorityList:
-                if item[0] not in percentages:
-                    printTaskGroup(item, -1, " ")
-                else:
-                    printTaskGroup(item, percentages[item[0]], " ")
-            
-def printTaskGroup(p, pctage, star):
-    if pctage > -1:
-        progressBar = ""
-        numStars = (pctage/10)
-        progressBar = "=" * numStars
-        numSpaces = 10 - numStars
-        for n in range(numSpaces):
-            progressBar += " "    
-
-        if pctage > 9:    
-            displayTotal = " %d%%"% (pctage, );
-        else:
-            displayTotal = "  %d%%"% (pctage, );
-        print "%s %s [%s] %s (%d todo's)"% (star, displayTotal, progressBar,  p[0], p[1],)
-    else:
-        print "%s %s (%d todo's)"% (star, p[0], p[1], )
     
 def separator(c):
     sep = ""
@@ -285,23 +241,8 @@ def main(argv):
         if task not in projects:
             projectsWithNoIncompletes[task] = 0
     
-    # print out useful info
-    #print "TODO.TXT Bird's Eye View Report %s"% ( datetime.date.today().isoformat(), )
-    print ""
-    print "TODO.TXT Bird's Eye View Report"
-
-    separator("=")
-
-    printTaskGroups("Projects with Open TODO's", projects, projectPriority, projectPercentages)
-    printTaskGroups("Contexts with Open TODO's", contexts, contextPriority, projectPercentages)
-    printTaskGroups("Completed Projects (No open TODO's)", projectsWithNoIncompletes, projectPriority, projectPercentages)
-    print ""
-    print "* Projects and contexts with an asterisk next to them denote prioritized tasks."
-    print "Project with prioritized tasks are listed first, then sorted by number of open todo's."
-    print ""
-
-
     forecastDue(allItems)
+    separator("=")
     forecastAvailable(allItems)
 
 
