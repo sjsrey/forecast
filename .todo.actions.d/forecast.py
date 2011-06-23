@@ -172,75 +172,21 @@ def main(argv):
         f = open(argv[0], "r")
         lines = f.readlines()
         f.close()
-        projects = {}
-        contexts = {}
-        projectPriority = []
-        contextPriority = []
         allItems = {}
         id = 1
         for line in lines:
             item = Item(line, id)
             id += 1
             allItems[item.id] = item
-            prioritized = False
-            words = line.split()
-            if words[0][0:1] == ("("):
-                prioritized = True
-            for word in words:
-                if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-                    if word not in projects:
-                        projects[word] = 1
-                    else:
-                        projects[word] = projects.setdefault(word,0)  + 1
-                    if prioritized:
-                        projectPriority.append(word)
-                if word[0:1] == "@":
-                    if word not in contexts:
-                        contexts[word] = 1
-                    else:
-                        contexts[word] = contexts.setdefault(word, 0)  + 1
-                    if prioritized:
-                        contextPriority.append(word)
     except IOError:
         print "ERROR:  The file named %s could not be read."% (argv[0], )
         usage()
         sys.exit(2)
-
-    # process done.txt
-    try:
-        completedTasks = {}
-        f = open (argv[1], "r")
-        for line in f:
-            words = line.split()
-            for word in words:
-                if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-                    if word not in completedTasks:
-                        completedTasks[word] = 1
-                    else:
-                        completedTasks[word] = completedTasks.setdefault(word, 0) + 1
-        f.close()
     except IOError:
         print "ERROR:  The file named %s could not be read."% (argv[1], )
         usage()
         sys.exit(2)
 
-    # calculate percentages
-    projectPercentages = {}
-    for project in projects:
-        openTasks = projects[project]
-        if project in completedTasks:
-            closedTasks = completedTasks[project]
-        else:
-            closedTasks = 0
-        totalTasks = openTasks + closedTasks
-        projectPercentages[project] = (closedTasks*100) / totalTasks
-
-    # get projects all done
-    projectsWithNoIncompletes = {}
-    for task in completedTasks:
-        if task not in projects:
-            projectsWithNoIncompletes[task] = 0
-    
     forecastDue(allItems)
     separator("=")
     forecastAvailable(allItems)
