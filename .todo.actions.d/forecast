@@ -6,7 +6,7 @@ shift
 [ "$action" = "usage" ] && {
   echo "  Forecast report:"
   echo "    forecast"
-  echo "      generates a textual report of pending and completed tasks in all projects and contexts"
+  echo "      generates forecast of upcoming due (or overdue) items"
   echo ""
   exit
 }
