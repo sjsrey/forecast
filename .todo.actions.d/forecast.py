@@ -2,10 +2,10 @@
 
 """ TODO.TXT Forecast
 USAGE:  
-    forecast.py [todo.txt] [done.txt]
+    forecast.py [todo.txt] 
     
 USAGE NOTES:
-    Expects two text files as parameters, each of which formatted as follows:
+    Expects one text files as parameter,  formatted as follows:
     - One todo per line, ie, "call Mom"
     - with an optional project association indicated as such: "+projectname"
     - with the context in which the tasks should be completed, indicated as such: "@context"
@@ -20,13 +20,20 @@ USAGE NOTES:
     +writing draft Great American Novel
     (B) smell the roses
     
-    The done.txt file is a list of completed todo's from todo.txt.
-    
     See more on todo.txt here:
     http://todotxt.com
     
     
 OUTPUT:
+    Two reports
+     
+      - Upcoming Items Report
+        - list by the next seven days of 
+            - items with start dates on or before date
+            - items with due dates on date
+      - Due Items Report
+        - sorted list of days with due items
+    
 
 CHANGELOG:
 
@@ -38,18 +45,23 @@ import sys
 import datetime
 
 
-__version__ = "0.1"
-__date__ = "2011-06-12"
-__updated__ = "2011-06-12"
+__version__ = "0.2"
+__date__ = "2012-05-29"
+__updated__ = "2012-05-29"
 __author__ = "Serge Rey  (sjsrey@gmail.com)"
-__copyright__ = "Copyright 2011, Sergio Rey"
+__copyright__ = "Copyright 2011-2012,  Sergio Rey"
 __license__ = "GPL"
 __history__ = """
 0.1 - Dev.
 """
 
-NOW = datetime.datetime.utcnow()
+NOW = datetime.date.today()
 DOW = "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
+
+def ds2dt(dateString):
+    ds = dateString.split(":")[1]
+    y,m,d = map(int, ds.split("-"))
+    return datetime.date(y,m,d)
 
 class Item:
     """
@@ -70,18 +82,12 @@ class Item:
                 line = line
                 taskWords.remove(word)
             if word[0:2] == "s:":
-                self.startDate = word.split(":")[1]
-                taskWords.remove(word)
-                dateStr = word.split(":")[1]
-                self.startTime = datetime.datetime.strptime(dateStr, "%Y-%m-%d")
-                if self.startTime <= NOW:
+                self.startDate = ds2dt(word)
+                if self.startDate <= NOW:
                     self.available = True
             if word[0:2] == "t:":
-                self.dueDate = word.split(":")[1]
-                taskWords.remove(word)
-                dateStr = word.split(":")[1]
-                self.dueTime = datetime.datetime.strptime(dateStr, "%Y-%m-%d")
-                if self.dueTime <= NOW:
+                self.dueDate = ds2dt(word)
+                if self.dueDate <= NOW:
                     self.overdue = True
             if word[0] == "(":
                 self.priority = word.split("(")[1].split(")")[0]
@@ -99,16 +105,47 @@ class Item:
             att = getattr(self, attribute, 'None')
             print "%s: %s"%(attribute, att)
 
+def forecastUpcoming(allItems):
+    weekAhead = [ NOW + datetime.timedelta(days=i) for i in range(7)]
+    slots = {}
+    for itemKey in allItems:
+        item = allItems[itemKey]
+        dueDate = getattr(item, 'dueDate', None)
+        startDate = getattr(item, 'startDate', None)
+        if startDate and dueDate:
+            for day in weekAhead:
+                if startDate <= day and day <= dueDate:
+                    slots.setdefault(day, []).append(item)
+        elif dueDate:
+            for day in weekAhead:
+                if dueDate == day:
+                    slots.setdefault(day, []).append(item)
+        elif startDate:
+            for day in weekAhead:
+                if startDate <= day:
+                    slots.setdefault(day, []).append(item)
+    keys = slots.keys()
+    keys.sort()
+    print 'Upcoming Items Report'
+    for key in keys:
+        dow = DOW[key.isoweekday()-1]
+        dfmt = key.strftime("%Y-%m-%d")
+        nItems = len(slots[key])
+        print "%s %s has %d item(s) available or due"%(dow, dfmt, nItems)
+        if nItems > 0:
+            items = slots[key]
+            for item in items:
+                print "\t",item.line
+
+
 def forecastDue(allItems):
     weekAhead = [ NOW + datetime.timedelta(days=i) for i in range(7)]
     slots = {}
     for itemKey in allItems:
         item = allItems[itemKey]
-        dueTime = getattr(item, 'dueTime', None)
-        if dueTime:
-            for day in weekAhead:
-                if dueTime <= day:
-                    slots.setdefault(day, []).append(item)
+        dueDate = getattr(item, 'dueDate', None)
+        if dueDate:
+            slots.setdefault(dueDate, []).append(item)
     keys = slots.keys()
     keys.sort()
     print 'Due Items Report'
@@ -116,43 +153,15 @@ def forecastDue(allItems):
         dow = DOW[key.isoweekday()-1]
         dfmt = key.strftime("%Y-%m-%d")
         nItems = len(slots[key])
-        print "%s %s has %d item(s) due"%(dow, dfmt, nItems)
+        print "%s %s has %d deadline(s):"%(dow, dfmt, nItems)
         if nItems > 0:
             items = slots[key]
             for item in items:
                 print "\t",item.line
-
-def forecastAvailable(allItems):
-    weekAhead = [ NOW + datetime.timedelta(days=i) for i in range(7)]
-    slots = {}
-    future = 0 
-
-    for itemKey in allItems:
-        item = allItems[itemKey]
-        startTime = getattr(item, 'startTime', None)
-        if startTime:
-            for day in weekAhead:
-                if startTime <= day:
-                    slots.setdefault(day, []).append(item)
-            if startTime > day:
-                future += 1
-    keys = slots.keys()
-    keys.sort()
-    print 'Available Items Report'
-    for key in keys:
-        dow = DOW[key.isoweekday()-1]
-        dfmt = key.strftime("%Y-%m-%d")
-        nItems = len(slots[key])
-        print "%s %s has %d item(s) available"%(dow, dfmt, nItems)
-        if nItems > 0:
-            items = slots[key]
-            for item in items:
-                print "\t",item.line
-    print "Future items: %d"%future
 
 
 def usage():
-    print "USAGE:  %s [todo.txt] [done.txt]"% (sys.argv[0], )
+    print "USAGE:  %s [todo.txt]"% (sys.argv[0], )
 
     
 def separator(c):
@@ -182,14 +191,12 @@ def main(argv):
         print "ERROR:  The file named %s could not be read."% (argv[0], )
         usage()
         sys.exit(2)
-    except IOError:
-        print "ERROR:  The file named %s could not be read."% (argv[1], )
-        usage()
-        sys.exit(2)
 
-    forecastDue(allItems)
+    forecastUpcoming(allItems)
     separator("=")
-    forecastAvailable(allItems)
+    forecastDue(allItems)
+    #separator("=")
+    #forecastAvailable(allItems)
 
 
 
