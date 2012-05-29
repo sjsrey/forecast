@@ -172,7 +172,7 @@ def separator(c):
 
 def main(argv):
     # make sure you have all your args
-    if len(argv) < 2:
+    if len(argv) < 1:
         usage()
         sys.exit(2)
 
