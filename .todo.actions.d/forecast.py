@@ -136,6 +136,7 @@ def forecastUpcoming(allItems):
             items = slots[key]
             for item in items:
                 print "\t",item.line
+        print "\n"
 
 
 def forecastDue(allItems):
@@ -158,7 +159,7 @@ def forecastDue(allItems):
             items = slots[key]
             for item in items:
                 print "\t",item.line
-
+        print "\n"
 
 def usage():
     print "USAGE:  %s [todo.txt]"% (sys.argv[0], )
