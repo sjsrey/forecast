@@ -49,7 +49,7 @@ __version__ = "0.2"
 __date__ = "2012-05-29"
 __updated__ = "2012-05-29"
 __author__ = "Serge Rey  (sjsrey@gmail.com)"
-__copyright__ = "Copyright 2011-2012,  Sergio Rey"
+__copyright__ = "Copyright 2011-2013,  Sergio Rey"
 __license__ = "GPL"
 __history__ = """
 0.1 - Dev.
