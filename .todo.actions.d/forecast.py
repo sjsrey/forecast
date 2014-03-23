@@ -192,7 +192,7 @@ def forecastUpcoming(allItems):
             items = slots[key]
             for item in items:
                 if item.due:
-                    print c.light_red(item.line).strip()
+                    print c.purple(item.line).strip()
                 elif item.overdue:
                     print c.red(item.line).strip()
                 else:
@@ -211,19 +211,20 @@ def forecastDue(allItems):
             slots.setdefault(dueDate, []).append(item)
     keys = slots.keys()
     keys.sort()
-    print 'Due Items Report'
+    c = Colors()
+    print c.yellow('Due Items Report')
     for key in keys:
         dow = DOW[key.isoweekday()-1]
         dfmt = key.strftime("%Y-%m-%d")
         nItems = len(slots[key])
-        print "%s %s has %d deadline(s):"%(dow, dfmt, nItems)
+        print c.green("%s %s has %d deadline(s):"%(dow, dfmt, nItems))
         if nItems > 0:
             items = slots[key]
             for item in items:
                 if item.due:
-                    print item.line
+                    print c.purple(item.line)
                 elif item.overdue:
-                    print item.line
+                    print c.red(item.line)
                 else:
                     print item.line
         print "\n"
