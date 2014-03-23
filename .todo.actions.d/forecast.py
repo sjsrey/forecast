@@ -45,11 +45,11 @@ import sys
 import datetime
 
 
-__version__ = "0.2"
+__version__ = "0.3"
 __date__ = "2012-05-29"
-__updated__ = "2012-05-29"
+__updated__ = "2014-03-23"
 __author__ = "Serge Rey  (sjsrey@gmail.com)"
-__copyright__ = "Copyright 2011-2013,  Sergio Rey"
+__copyright__ = "Copyright 2011-2014,  Sergio Rey"
 __license__ = "GPL"
 __history__ = """
 0.1 - Dev.
@@ -58,10 +58,61 @@ __history__ = """
 NOW = datetime.date.today()
 DOW = "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
 
+# Bash coloring from:
+# https://github.com/emilerl/emilerl/blob/master/pybash/bash/__init__.py
+
+RESET = '\033[0m'
+CCODES = {
+    'black'           :'\033[0;30m',
+    'blue'            :'\033[0;34m',
+    'green'           :'\033[0;32m',
+    'cyan'            :'\033[0;36m',
+    'red'             :'\033[0;31m',
+    'purple'          :'\033[0;35m',
+    'brown'           :'\033[0;33m',
+    'light_gray'      :'\033[0;37m',
+    'dark_gray'       :'\033[0;30m',
+    'light_blue'      :'\033[0;34m',
+    'light_green'     :'\033[0;32m',
+    'light_cyan'      :'\033[0;36m',
+    'light_red'       :'\033[0;31m',
+    'light_purple'    :'\033[0;35m',
+    'yellow'          :'\033[0;33m',
+    'white'           :'\033[0;37m',
+}
+
+class Colors(object):
+    """A helper class to colorize strings"""
+    def __init__(self, state = False):
+        self.disabled = state
+    
+    def disable(self):
+        self.disabled = True
+        
+    def enable(self):
+        self.disabled = False
+            
+    def __getattr__(self,key):
+        if key not in CCODES.keys():
+            raise AttributeError, "Colors object has no attribute '%s'" % key
+        else:
+            if self.disabled:
+                return lambda x: x
+            else:
+                return lambda x: RESET + CCODES[key] + x + RESET
+    
+    def __dir__(self):
+        return self.__class__.__dict__.keys() + CCODES.keys()
+
+
 def ds2dt(dateString):
     ds = dateString.split(":")[1]
     y,m,d = map(int, ds.split("-"))
     return datetime.date(y,m,d)
+
+
+DONE = "done.txt"
+
 
 class Item:
     """
@@ -76,6 +127,8 @@ class Item:
         self.line = str(id) +  " " + self.line
         self.available = False
         self.overdue = False
+        self.due = False
+        self.color = 'blue'
         for word in words:
             if word[0] == "+":
                 self.project = word.split("+")[1]
@@ -89,6 +142,8 @@ class Item:
                 self.dueDate = ds2dt(word)
                 if self.dueDate <= NOW:
                     self.overdue = True
+                else:
+                    self.due = True
             if word[0] == "(":
                 self.priority = word.split("(")[1].split(")")[0]
                 taskWords.remove(word)
@@ -126,16 +181,23 @@ def forecastUpcoming(allItems):
                     slots.setdefault(day, []).append(item)
     keys = slots.keys()
     keys.sort()
-    print 'Upcoming Items Report'
+    c = Colors(state=False)
+    print c.yellow('Upcoming Items Report').strip()
     for key in keys:
         dow = DOW[key.isoweekday()-1]
         dfmt = key.strftime("%Y-%m-%d")
         nItems = len(slots[key])
-        print "%s %s has %d item(s) available or due"%(dow, dfmt, nItems)
+        print c.green("%s %s has %d item(s) available or due"%(dow, dfmt, nItems))
         if nItems > 0:
             items = slots[key]
             for item in items:
-                print "\t",item.line
+                if item.due:
+                    print c.light_red(item.line).strip()
+                elif item.overdue:
+                    print c.red(item.line).strip()
+                else:
+                    print c.blue(item.line).strip()
+
         print "\n"
 
 
@@ -158,7 +220,12 @@ def forecastDue(allItems):
         if nItems > 0:
             items = slots[key]
             for item in items:
-                print "\t",item.line
+                if item.due:
+                    print item.line
+                elif item.overdue:
+                    print item.line
+                else:
+                    print item.line
         print "\n"
 
 def usage():
