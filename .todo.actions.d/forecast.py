@@ -182,6 +182,7 @@ def forecastUpcoming(allItems):
     keys = slots.keys()
     keys.sort()
     c = Colors(state=False)
+    print "\n"
     print c.yellow('Upcoming Items Report').strip()
     for key in keys:
         dow = DOW[key.isoweekday()-1]
@@ -212,6 +213,7 @@ def forecastDue(allItems):
     keys = slots.keys()
     keys.sort()
     c = Colors()
+    print "\n"
     print c.yellow('Due Items Report')
     for key in keys:
         dow = DOW[key.isoweekday()-1]
