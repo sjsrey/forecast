@@ -171,14 +171,17 @@ def forecastUpcoming(allItems):
             for day in weekAhead:
                 if startDate <= day and day <= dueDate:
                     slots.setdefault(day, []).append(item)
+                    break
         elif dueDate:
             for day in weekAhead:
                 if dueDate == day:
                     slots.setdefault(day, []).append(item)
+                    break
         elif startDate:
             for day in weekAhead:
                 if startDate <= day:
                     slots.setdefault(day, []).append(item)
+                    break
     keys = slots.keys()
     keys.sort()
     c = Colors(state=False)
