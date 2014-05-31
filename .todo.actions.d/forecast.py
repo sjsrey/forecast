@@ -155,6 +155,7 @@ class Item:
         taskWords = words[:]
         self.id = id
         self.line = line
+        self.org_line = line[:]
         self.line = self.line.strip()
         self.line = str(id) +  " " + self.line
         self.available = False
@@ -170,12 +171,18 @@ class Item:
                 self.startDate = ds2dt(word)
                 if self.startDate <= NOW:
                     self.available = True
+                repword = "s:"+self.startDate.strftime("%Y-%m-%d")
+                self.line = self.line.replace(word,repword)
+                taskWords[taskWords.index(word)] = "s:"+self.startDate.strftime("%Y-%m-%d")
             if word[0:2] == "t:":
                 self.dueDate = ds2dt(word)
                 if self.dueDate <= NOW:
                     self.overdue = True
                 else:
                     self.due = True
+                taskWords[taskWords.index(word)] = "t:"+self.dueDate.strftime("%Y-%m-%d")
+                repword = "t:"+self.dueDate.strftime("%Y-%m-%d")
+                self.line = self.line.replace(word,repword)
             if word[0] == "(":
                 self.priority = word.split("(")[1].split(")")[0]
                 taskWords.remove(word)
@@ -298,6 +305,14 @@ def main(argv):
         usage()
         sys.exit(2)
 
+    tmp = argv[0]
+    tmp = open(tmp, 'w')
+    new_lines = []
+    for item in allItems:
+        new_lines.append((" ".join(allItems[item].line.split()[1:])))
+    tmp.write("\n".join(new_lines))
+    tmp.write("\n")
+    tmp.close()
     forecastUpcoming(allItems)
     separator("=")
     forecastDue(allItems)
