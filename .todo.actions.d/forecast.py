@@ -43,11 +43,12 @@ CHANGELOG:
 
 import sys
 import datetime
+import re
 
 
 __version__ = "0.3"
 __date__ = "2012-05-29"
-__updated__ = "2014-03-23"
+__updated__ = "2014-05-31"
 __author__ = "Serge Rey  (sjsrey@gmail.com)"
 __copyright__ = "Copyright 2011-2014,  Sergio Rey"
 __license__ = "GPL"
@@ -120,11 +121,9 @@ def ds2dt(dateString):
         today = datetime.date.today()
         try:
             # numeric argument
-
-            num = int(ds[0])
-            print num
-            freq = ds[1:].upper()
-            print freq
+            num = re.findall(r'\d+',ds)[0]
+            freq = ds.replace(num,'').upper()
+            num = int(num)
             future = today + datetime.timedelta(days=num * freqs[freq])
             return future
         except:
