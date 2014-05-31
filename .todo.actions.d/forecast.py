@@ -104,12 +104,44 @@ class Colors(object):
     def __dir__(self):
         return self.__class__.__dict__.keys() + CCODES.keys()
 
+freqs = {"W":7, "M": 31, "D": 1, "Y": 365}
+dow = {"MON": 0, "TUE": 1, "WED": 2, "THU": 3,
+       "FRI": 4, "SAT": 5, "SUN": 6}
 
 def ds2dt(dateString):
-    ds = dateString.split(":")[1]
-    y,m,d = map(int, ds.split("-"))
-    return datetime.date(y,m,d)
+    lead, ds = dateString.split(":")
+    # check if in iso format already
+    dc = ds.count("-")
+    if dc == 2:
+        y,m,d = map(int, ds.split("-"))
+        return datetime.date(y,m,d)
+    else:
+        # have to translate shortcuts
+        today = datetime.date.today()
+        try:
+            # numeric argument
 
+            num = int(ds[0])
+            print num
+            freq = ds[1:].upper()
+            print freq
+            future = today + datetime.timedelta(days=num * freqs[freq])
+            return future
+        except:
+            try:
+                weekday = today.weekday()
+                dsupper = ds.upper()
+                if dsupper == 'TOD':
+                    fwkd = weekday
+                else:
+                    fwkd = dow[ds.upper()]
+                if weekday > fwkd:
+                    future = today + datetime.timedelta(days = 7 + fwkd - weekday)
+                else:
+                    future = today + datetime.timedelta(days = fwkd - weekday)
+                return future
+            except:
+                print 'bad shortcut: ', dateString
 
 DONE = "done.txt"
 
