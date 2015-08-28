@@ -12,4 +12,4 @@ Planned Features
 
   - adding a backcast function to report previous activities 
   - adding api to support new filters (i.e., android app)
-  - integrate hooks for tab completion (currently broken on zsh)
+ 
