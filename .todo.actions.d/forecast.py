@@ -161,6 +161,11 @@ class Item:
         self.overdue = False
         self.due = False
         self.color = 'blue'
+        # check of first word is a todo date from the app
+        word0 = words[0]
+        if len(word0)==10 and word0.count('-')==2:
+            y,m,d = map(int, word0.split("-"))
+            self.startDate = datetime.date(y,m,d)
         for word in words:
             if word[0] == "+":
                 self.project = word.split("+")[1]
