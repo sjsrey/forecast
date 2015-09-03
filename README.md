@@ -3,7 +3,7 @@ forecast
 
 An add-on for todo.txt-cli that provides a forecast of:
 
-  - items that will be started (available) the coming week
+  - items that will be started during the coming week
   - items that are due or overdue
 
 
