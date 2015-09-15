@@ -160,6 +160,7 @@ class Item:
         self.available = False
         self.overdue = False
         self.due = False
+        self.stale = False
         self.color = 'blue'
         # check of first word is a todo date from the app
         word0 = words[0]
@@ -175,6 +176,8 @@ class Item:
                 self.startDate = ds2dt(word)
                 if self.startDate <= NOW:
                     self.available = True
+                    if self.startDate < NOW:
+                        self.stale = True
                 repword = "s:"+self.startDate.strftime("%Y-%m-%d")
                 self.line = self.line.replace(word,repword)
                 taskWords[taskWords.index(word)] = "s:"+self.startDate.strftime("%Y-%m-%d")
@@ -242,6 +245,8 @@ def forecastUpcoming(allItems):
                     print c.purple(item.line).strip()
                 elif item.overdue:
                     print c.red(item.line).strip()
+                elif item.stale:
+                    print c.cyan(item.line)
                 else:
                     print c.blue(item.line).strip()
 
