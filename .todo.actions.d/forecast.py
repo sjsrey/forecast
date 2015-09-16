@@ -77,6 +77,7 @@ CCODES = {
     'light_green'     :'\033[0;32m',
     'light_cyan'      :'\033[0;36m',
     'light_red'       :'\033[0;31m',
+    'bold_red'        :'\033[1;31m',  
     'light_purple'    :'\033[0;35m',
     'yellow'          :'\033[0;33m',
     'white'           :'\033[0;37m',
@@ -244,11 +245,11 @@ def forecastUpcoming(allItems):
                 if item.due:
                     print c.purple(item.line).strip()
                 elif item.overdue:
-                    print c.red(item.line).strip()
+                    print c.bold_red(item.line).strip()
                 elif item.stale:
-                    print c.cyan(item.line)
+                    print c.red(item.line).strip()
                 else:
-                    print c.blue(item.line).strip()
+                    print c.cyan(item.line).strip()
 
         print "\n"
 

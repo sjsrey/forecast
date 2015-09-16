@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 """ TODO.TXT Forecast
-USAGE:  
+USAGE:
     recur.py
-    
+
 USAGE NOTES:
     Expects one text files as parameter,  formatted as follows:
     - One todo per line, ie, "call Mom"
@@ -12,29 +12,26 @@ USAGE NOTES:
     - with the task priority optionally listed at the front of the line, in parens, ie, "(A)"
     - with start date optionally listed as "s:2011-06-10"
     - with due date optionally listed as "t:2011-07-10"
-    
+
     For example, 4 lines of todo.txt might look like this:
 
     +garagesale @phone schedule Goodwill pickup s:2011-06-10 t:2011-07-10
     (A) @phone Tell Mom I love her t:2011-06-12
     +writing draft Great American Novel
     (B) smell the roses
-    
+
     See more on todo.txt here:
     http://todotxt.com
-    
-    
+
 OUTPUT:
     Two reports
-     
+
       - Upcoming Items Report
-        - list by the next seven days of 
+        - list by the next seven days of
             - items with start dates on or before date
             - items with due dates on date
       - Due Items Report
         - sorted list of days with due items
-    
-
 CHANGELOG:
 
     Based on birdseye.py by Gina Trapani
@@ -128,7 +125,7 @@ def ds2dt(dateString):
             num = re.findall(r'\d+',ds)[0]
             freq = ds.replace(num,'').upper()
             num = int(num)
-            future = today + datetime.timedelta(days=num * freqs[freq])
+            future = today + datetime.timedelta(days=num * FREQS[freq])
             return future
         except:
             try:
@@ -137,7 +134,7 @@ def ds2dt(dateString):
                 if dsupper == 'TOD':
                     fwkd = weekday
                 else:
-                    fwkd = dow[ds.upper()]
+                    fwkd = DOW[ds.upper()]
                 if weekday > fwkd:
                     future = today + datetime.timedelta(days = 7 + fwkd - weekday)
                 else:
@@ -181,11 +178,6 @@ class Item:
             words = [project[0], line]
             words.extend(body_words)
             self.line = " ".join(words)
-            print self.line
-
-
-        print self.dow
-        print self.project
 
 
     
