@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 """ TODO.TXT Forecast
-USAGE:  
-    forecast.py [todo.txt] 
-    
+USAGE:
+    forecast.py [todo.txt]
+
 USAGE NOTES:
     Expects one text files as parameter,  formatted as follows:
     - One todo per line, ie, "call Mom"
@@ -12,28 +12,28 @@ USAGE NOTES:
     - with the task priority optionally listed at the front of the line, in parens, ie, "(A)"
     - with start date optionally listed as "s:2011-06-10"
     - with due date optionally listed as "t:2011-07-10"
-    
+
     For example, 4 lines of todo.txt might look like this:
 
     +garagesale @phone schedule Goodwill pickup s:2011-06-10 t:2011-07-10
     (A) @phone Tell Mom I love her t:2011-06-12
     +writing draft Great American Novel
     (B) smell the roses
-    
+
     See more on todo.txt here:
     http://todotxt.com
-    
-    
+
+
 OUTPUT:
     Two reports
-     
+
       - Upcoming Items Report
-        - list by the next seven days of 
+        - list by the next seven days of
             - items with start dates on or before date
-            - items with due dates on date
+            - items with due dates on or before date
       - Due Items Report
         - sorted list of days with due items
-    
+
 
 CHANGELOG:
 
@@ -77,7 +77,7 @@ CCODES = {
     'light_green'     :'\033[0;32m',
     'light_cyan'      :'\033[0;36m',
     'light_red'       :'\033[0;31m',
-    'bold_red'        :'\033[1;31m',  
+    'bold_red'        :'\033[1;31m',
     'light_purple'    :'\033[0;35m',
     'yellow'          :'\033[0;33m',
     'white'           :'\033[0;37m',
@@ -87,13 +87,13 @@ class Colors(object):
     """A helper class to colorize strings"""
     def __init__(self, state = False):
         self.disabled = state
-    
+
     def disable(self):
         self.disabled = True
-        
+
     def enable(self):
         self.disabled = False
-            
+
     def __getattr__(self,key):
         if key not in CCODES.keys():
             raise AttributeError, "Colors object has no attribute '%s'" % key
@@ -102,7 +102,7 @@ class Colors(object):
                 return lambda x: x
             else:
                 return lambda x: RESET + CCODES[key] + x + RESET
-    
+
     def __dir__(self):
         return self.__class__.__dict__.keys() + CCODES.keys()
 
@@ -216,12 +216,12 @@ def forecastUpcoming(allItems):
         startDate = getattr(item, 'startDate', None)
         if startDate and dueDate:
             for day in weekAhead:
-                if startDate <= day and day <= dueDate:
+                if startDate <= day or day <= dueDate:
                     slots.setdefault(day, []).append(item)
                     break
         elif dueDate:
             for day in weekAhead:
-                if dueDate == day:
+                if dueDate <= day:
                     slots.setdefault(day, []).append(item)
                     break
         elif startDate:
@@ -298,7 +298,7 @@ def forecastDue(allItems):
 def usage():
     print "USAGE:  %s [todo.txt]"% (sys.argv[0], )
 
-    
+
 def separator(c):
     sep = ""
     sep = c * 42
