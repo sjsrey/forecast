@@ -241,16 +241,28 @@ def forecastUpcoming(allItems):
         print c.green("%s %s has %d item(s) available or due"%(dow, dfmt, nItems))
         if nItems > 0:
             items = slots[key]
+            sorted_items = {}
+            sorted_items['overdue'] = []
+            sorted_items['stale'] = []
+            sorted_items['upcoming'] = []
+            sorted_items['available'] = []
             for item in items:
                 if item.due:
-                    print c.purple(item.line).strip()
+                    sorted_items['upcoming'].append(item.line)
                 elif item.overdue:
-                    print c.bold_red(item.line).strip()
+                    sorted_items['overdue'].append(item.line)
                 elif item.stale:
-                    print c.red(item.line).strip()
+                    sorted_items['stale'].append(item.line)
                 else:
-                    print c.cyan(item.line).strip()
-
+                    sorted_items['available'].append(item.line)
+            for item in sorted_items['overdue']:
+                print c.bold_red(item).strip()
+            for item in sorted_items['stale']:
+                print c.red(item).strip()
+            for item in sorted_items['upcoming']:
+                print c.purple(item).strip()
+            for item in sorted_items['available']:
+                print c.cyan(item).strip()
         print "\n"
 
 
