@@ -186,8 +186,8 @@ class Item:
                 self.dueDate = ds2dt(word)
                 if self.dueDate <= NOW:
                     self.overdue = True
-                else:
-                    self.due = True
+                #"else:
+                #"    self.due = True
                 taskWords[taskWords.index(word)] = "t:"+self.dueDate.strftime("%Y-%m-%d")
                 repword = "t:"+self.dueDate.strftime("%Y-%m-%d")
                 self.line = self.line.replace(word,repword)
@@ -214,9 +214,9 @@ def forecastUpcoming(allItems):
         item = allItems[itemKey]
         dueDate = getattr(item, 'dueDate', None)
         startDate = getattr(item, 'startDate', None)
-        if startDate and dueDate:
+        if startDate:
             for day in weekAhead:
-                if startDate <= day or day <= dueDate:
+                if startDate <= day:
                     slots.setdefault(day, []).append(item)
                     break
         elif dueDate:
@@ -224,9 +224,9 @@ def forecastUpcoming(allItems):
                 if dueDate <= day:
                     slots.setdefault(day, []).append(item)
                     break
-        elif startDate:
+        elif startDate and dueDate:
             for day in weekAhead:
-                if startDate <= day:
+                if startDate <= day or day <= dueDate:
                     slots.setdefault(day, []).append(item)
                     break
     keys = slots.keys()
