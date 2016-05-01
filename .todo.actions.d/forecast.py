@@ -182,7 +182,7 @@ class Item:
                 repword = "s:"+self.startDate.strftime("%Y-%m-%d")
                 self.line = self.line.replace(word,repword)
                 taskWords[taskWords.index(word)] = "s:"+self.startDate.strftime("%Y-%m-%d")
-            if word[0:2] == "t:":
+            if word[0:2] == "t:" or word[0:2] == "d:":
                 self.dueDate = ds2dt(word)
                 if self.dueDate <= NOW:
                     self.overdue = True
@@ -343,6 +343,6 @@ def main(argv):
 
 
 
-
 if __name__ == "__main__":
     main(sys.argv[1:])
+
